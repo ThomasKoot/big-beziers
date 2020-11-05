@@ -1,15 +1,20 @@
-import { findBezierPaths } from './functions'
 
-export function renderScreen(points, ctx, phase) {
+export function renderScreen(paths, canvas, bezierPath) {
     //renders all lines and points to the context at a given phase, includes all intermediate paths.
 
-    ctx.clearRect(0,0,500,500)
-    const paths = findBezierPaths(points, phase)
+    const canvasSize = canvas.current.clientWidth;
+    const ctx = canvas.current.getContext('2d');
+    ctx.clearRect(0,0,canvasSize,canvasSize);
+    ctx.strokeStyle = "red"
+    ctx.stroke(bezierPath);
+
+
     paths.reverse().forEach((e, i, a) => {          //path-array is reversed to ensure correct drawing order
         const percentage = ((i+1)/a.length * .5)    //percentage is used to lower the opacity for intermediate paths
-        return i === a.length - 1 ? drawBasePoints(ctx, e) :
-                    i === 0 ? drawEndPoint(ctx, e) : drawIntermediatePoints(ctx, e, percentage)
+        return (i === a.length - 1 || i === 0) ? null : drawIntermediatePoints(ctx, e, percentage)
     })
+    drawBasePoints(ctx, paths[paths.length -1]) 
+    if (paths.length > 1) { drawEndPoint(ctx, paths[0]) }
 }
 
 function drawBasePoints(ctx, paths) {

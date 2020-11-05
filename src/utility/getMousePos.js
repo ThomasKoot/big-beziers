@@ -9,8 +9,8 @@ export function getMousePos(evt) {
     let rect = target.getBoundingClientRect();
     let x = evt.clientX - rect.left;
     let y = evt.clientY - rect.top;        
-    x = constrain(x, 0, rect.width);
-    y = constrain(y, 0, rect.height);
+    x = constrain(x/rect.width, 0, 1);
+    y = constrain(y/rect.height, 0, 1);
     return ({x, y})
 }
 
@@ -18,8 +18,8 @@ export const getReferencedMousePos = (reference, evt) => {
     let rect = reference.getBoundingClientRect();
     let x = evt.clientX - rect.left;
     let y = evt.clientY - rect.top;
-    x = constrain(x, 0, rect.width);
-    y = constrain(y, 0, rect.height);
+    x = constrain(x/rect.width, 0, 1);
+    y = constrain(y/rect.height, 0, 1);
      
     return ({x, y})
 }

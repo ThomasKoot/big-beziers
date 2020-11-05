@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from 'react'
 import { getMousePos, getReferencedMousePos } from "../utility/getMousePos"
 import styled from 'styled-components'
 import canvasRenderer from './CanvasRenderer'
+import { radius } from './constants'
 
 const SvgContainer = styled.div`
     border: 1px solid green;
-    height: 500px;
-    width: 500px;
+    height: 50%;
+    width: 50%;
 `
 
 const Wrapper = styled.div`
@@ -19,19 +20,36 @@ function PointCanvas(props) {
     const [points, setPoints] = useState([]);
     const [isAnimated, setIsAnimated] = useState(false)
     const canvasRef = useRef();
-    const radius = 20;
-    const phase = useRef(0.5)
-    const cancelAnimation = useRef()
-    
+    const containerRef = useRef();
+    const phase = useRef(0.25);
+    const cancelAnimation = useRef();
+
 
     useEffect(() => {
+
+        function scaleCanvas() {
+            canvasRef.current.width = containerRef.current.clientWidth;
+            canvasRef.current.height = containerRef.current.clientWidth;
+        }
+
+        function resizeHandler() {
+            scaleCanvas();
+        }
+        resizeHandler();
+
+        
+        window.addEventListener('resize', resizeHandler);
+        return () => { window.removeEventListener('resize', resizeHandler) }
+    },[])
+    
+    useEffect(() => {
+        console.log("i'm here")
         if (isAnimated) {
-            cancelAnimation.current = canvasRenderer(points, canvasRef.current, phase, isAnimated);
+            cancelAnimation.current = canvasRenderer(points, canvasRef, phase, isAnimated);
             return () => cancelAnimation.current()
         } else {
-            canvasRenderer(points, canvasRef.current, phase, isAnimated)
+            canvasRenderer(points, canvasRef, phase, isAnimated)
         }
-        
     }, [points, isAnimated])
 
     function handleClick(e) {
@@ -82,7 +100,9 @@ function PointCanvas(props) {
         <Wrapper>
             <button onClick={() => setIsAnimated(prev => !prev)}>animate!</button>
             <SvgContainer>
-                <canvas ref={canvasRef} width="500px" height="500px" onMouseDown={handleClick}/>
+                <div ref={containerRef} style={{width: "100%", height: "100%"}}>
+                    <canvas ref={canvasRef} onMouseDown={handleClick}/>
+                </div>
             </SvgContainer>
         </Wrapper>
         );

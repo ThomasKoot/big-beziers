@@ -1,5 +1,6 @@
-
+import { findBezierPaths } from './functions'
 import { renderScreen } from './drawFunctions'
+import { calculateBezierPath } from './berzierFunction';
 
 function canvasRenderer (points, canvas, phaseRef, isAnimated) {
     //handles the rendering of the canvas, takes a phaseRef which is used to increment the phase without
@@ -8,12 +9,13 @@ function canvasRenderer (points, canvas, phaseRef, isAnimated) {
     //when isAnimated the function starts the animation and return a function that stops the animation, 
     //otherwise, only a single screen in rendered. 
 
-    const ctx = canvas.getContext('2d');
     let requestId;
+    const bezierPath = calculateBezierPath(points.map(e => e.map(x => x * canvas.current.clientWidth)), 200);
 
     function animate() {
-        phaseRef.current = (phaseRef.current + 0.01) % 1;
-        renderScreen(points, ctx, phaseRef.current)
+        phaseRef.current = (phaseRef.current + 0.001) % 1;
+        const paths = findBezierPaths(points, phaseRef.current, canvas.current.clientWidth)
+        renderScreen(paths, canvas, bezierPath)
         requestId = requestAnimationFrame(animate)
     }
 
@@ -21,9 +23,9 @@ function canvasRenderer (points, canvas, phaseRef, isAnimated) {
         requestId = requestAnimationFrame(animate);
         return () => cancelAnimationFrame(requestId)
     } else {
-        renderScreen(points, ctx, phaseRef.current)
+        const paths = findBezierPaths(points, phaseRef.current, canvas.current.clientWidth)
+        renderScreen(paths, canvas, bezierPath)
     }
-
 }
 
 
