@@ -1,4 +1,4 @@
-import { intermediateRadiusRatio, endPointRatio, radius } from './constants'
+import { intermediateRadiusRatio, endPointRatio, radius } from '../constants'
 
 export function findBezierPaths(points, phase, scale) {
     //takes a points-array and converts this into an array of Path2D object representing
@@ -6,7 +6,6 @@ export function findBezierPaths(points, phase, scale) {
     //returns an array of objects of the form {cirles, line}, each entry represents the elements of one iteration of the 
     //recursive bezier algorithm. 
 
-    const t = Math.abs(phase - .5) * 2; //the phase is a sawtooth wave, this transform it into a triangle wave.
     let p = points.map(e => e.map(x => x * scale));
 
     if (p.length === 1) return ([calculatePaths(p, radius * scale)]) //if there is only one point, it is considered a base point
@@ -15,7 +14,7 @@ export function findBezierPaths(points, phase, scale) {
 
     while (p.length >= 2) {
         paths.push(calculatePaths(p, radius * scale * ((p.length === points.length) ? 1 : intermediateRadiusRatio)));
-        p = findNewPoints(p, t)
+        p = findNewPoints(p, phase)
     }
     paths.push(calculatePaths(p, radius * scale * endPointRatio))
     return paths;

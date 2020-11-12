@@ -1,16 +1,17 @@
-function memoizedFactorial() {
-    let cache = [1];
-    function inner(n) {
-        if (!cache[n]) {
-        cache[n] = inner(n - 1) * n 
-        } 
-        return cache[n]
-    }
-    return inner
-}
-
 function setupBezierFunction(points) {
-    //sets up the bernstein polynomials, returns a function that is only dependent on t. 
+    //Sets up the bernstein polynomials, returns a function that is only dependent on t. 
+    //A memoized factorial function is used to calculate the binomial coefficients for optimisation purposes.
+
+    function memoizedFactorial() {
+        let cache = [1];
+        function inner(n) {
+            if (!cache[n]) {
+            cache[n] = inner(n - 1) * n 
+            } 
+            return cache[n]
+        }
+        return inner
+    }
         
     let factorial = memoizedFactorial();
 
@@ -23,6 +24,7 @@ function setupBezierFunction(points) {
     }
 
     const coefficients = generateCoefficients(points);
+
     return function(t) { 
         const n = points.length - 1;
         return points.map((e, i) => {
@@ -32,9 +34,8 @@ function setupBezierFunction(points) {
     }
 }
 
-export function calculateBezierPath(points, resolution) {
-    //this function creates a path approximating the bezier path defined by -points. The -resolution set the
-    //number of straight lines used to approximate the path.
+function calculateBezierArray(points, resolution) {
+    //Creates an array of coordinates approximating the bezier path defined by -points. 
 
     const bezierFunction = setupBezierFunction(points);
     let bezierArray = [];
@@ -42,8 +43,9 @@ export function calculateBezierPath(points, resolution) {
     while(i <= resolution) {
         bezierArray.push(bezierFunction(i/resolution));
         i++
-    }
-    const bezierPath = bezierArray.map((e, i) => (i === 0 ? "M" : "L") + e[0] + "," + e[1]).join(" ")
-    
-    return new Path2D(bezierPath)
+    }     
+    return bezierArray;
 }
+
+export default calculateBezierArray;
+
