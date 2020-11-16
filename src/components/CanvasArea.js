@@ -23,18 +23,16 @@ const ParagraphContainer = styled.div`
 
 const CanvasContainer = styled.div`
     height: ${props => "" + props.height + "px"};
+    width: ${props => "" + props.height + "px"};
     background-color: white;
     border-radius: 10px;
-    width: 100%;
     background-color: white;
     display: flex;
     position: relative;
 `
 
-
-function CanvasArea( { points, setPoints, phase, displayInfo, setDisplayInfo } ) {
+function CanvasArea( { points, setPoints, phase, displayInfo, setDisplayInfo, canvasSize } ) {
   
-    const [canvasSize, setCanvasSize] = useState(0);
     const [bezierArray, setBezierArray] = useState()
     const canvasRef = useRef();
     const containerRef = useRef();
@@ -52,17 +50,6 @@ function CanvasArea( { points, setPoints, phase, displayInfo, setDisplayInfo } )
             canvasRenderer(points, phase, canvasRef, bezierArray)
         }
     })
-
-    useEffect(() => {   
-        //scale the canvas on resize
-
-        function scaleCanvas() {
-            setCanvasSize(containerRef.current.clientWidth)
-        }
-        scaleCanvas();
-        window.addEventListener('resize', scaleCanvas);
-        return () => { window.removeEventListener('resize', scaleCanvas) }
-    }, [])
     
     const handleClick = displayInfo ? () => setDisplayInfo(false) : setupClickHandler(points, setPoints);
 
@@ -84,11 +71,9 @@ function CanvasArea( { points, setPoints, phase, displayInfo, setDisplayInfo } )
     }
 
     return (
-        <div>
-            <CanvasContainer ref={containerRef} height={canvasSize} onMouseDown={isMobile ? null : handleClick} onTouchStart={handleClick}>
-                {displayInfo ? renderParagraph(data.info) : (points.length === 0 ? renderParagraph(data.blank) : renderCanvas())}
-            </CanvasContainer>
-        </div>
+        <CanvasContainer ref={containerRef} height={canvasSize} onMouseDown={isMobile ? null : handleClick} onTouchStart={handleClick}>
+            {displayInfo ? renderParagraph(data.info) : (points.length === 0 ? renderParagraph(data.blank) : renderCanvas())}
+        </CanvasContainer>
     );
 }
 

@@ -22,8 +22,9 @@ function initializeClickHandler() {
         
         return function handleClick(e) {
 
+            const isMobile = /^touch/.test(e.type);
             const mouse = getMousePos(e); 
-            const withinMouseRange = compareRange(mouse, radius);
+            const withinMouseRange = compareRange(mouse, isMobile ? radius * 2 : radius);
             const targetedPoint = points.map(withinMouseRange).indexOf(true); 
             
             if (targetedPoint === -1 ) {

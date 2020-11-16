@@ -1,35 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CanvasArea from './CanvasArea';
 import Slider from './Slider'
 import Header from './Header'
 import styled from 'styled-components'
 import { colors, radius, mobileQuery } from './constants';
 
-const MainRow = styled.div`
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    background-color: ${props => props.backgroundColor || "white"}
-`
-
 const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
+    min-height: 100%;
+`
+
+const MainRow = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: ${props => props.backgroundColor || "white"};
+    height: ${props => props.windowHeight * .7}px;
+    @media ${mobileQuery} {
+        height: ${props => props.windowHeight * .8}px;
+    }
+`
+
+const A = styled.a`
+    text-decoration: none;
+    color: inherit;
 `
 
 const Content = styled.div`
-    margin-top: 5vh;
+    margin-top: ${props => props.height * 0.05}px;
     width: 100%;
     max-width: 150vh;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    @media ${mobileQuery} {
-        margin-top: 0;
-    }
+    height: 95%;
+    
 `
 
 const Sides = styled.div`
@@ -37,8 +45,8 @@ const Sides = styled.div`
     @media ${mobileQuery} {
         display: flex;
         width: 50%;
+        height: 10%;
         order: ${props => props.mobileOrder};
-        margin: 4vh 0 4vh 0;
         justify-content: ${props => props.justify}
     }
 `
@@ -46,8 +54,7 @@ const Sides = styled.div`
 const CanvasContainer = styled.div`
     width: 50vh;
     @media ${mobileQuery} {
-        width: 80vw;
-        max-width: 50vh;
+        height: ${props => props.windowHeight * .5}px;
         order: ${props => props.mobileOrder};
     }
 `
@@ -63,7 +70,7 @@ const MainButton = styled.button`
     height: 15vh;
     @media ${mobileQuery} {
         width: 70%;
-        height: 8vh;
+        height: 80%;
         border-radius: 10px;
         margin: 0% 3% 0% 3%;
         font-size: 2vh;
@@ -82,8 +89,9 @@ const MainButton = styled.button`
 
 const SliderContainer = styled.div`
     height: 10vh;
+    order: 4;
     @media ${mobileQuery} {
-        height: 12vh;
+        height: 15%;
         border-radius: 5px;
     }
     width:100%;
@@ -91,17 +99,17 @@ const SliderContainer = styled.div`
 
 const FooterRow = styled(MainRow) `
     align-items: flex-end;
+    height: ${props => props.windowHeight * .1}px;
     @media ${mobileQuery} {
-        height: 8vh;
+        height: ${props => props.windowHeight * .05}px;
     }
-    flex-grow: 1;
 `
 
 const Footer = styled.p`
-    font-size: 16px;
+    font-size: 2vh;
     color: ${props => props.color};
     @media ${mobileQuery} {
-        font-size: 2vh;
+        font-size: 1.5vh;
     }
 `
 
@@ -110,6 +118,7 @@ function Main(props) {
     const [points, setPoints] = useState([]);
     const [phase, setPhase] = useState(.25);
     const [displayInfo, setDisplayInfo] = useState(false);
+    const [height, setHeight] = useState(Number(window.innerHeight))
 
     function reset() {
         setPoints([]);
@@ -128,20 +137,32 @@ function Main(props) {
         setPoints(createRandomPoints())
         if (displayInfo) { setDisplayInfo(false) }
     }
+
+    useEffect(() => {
+        function scaleHeight() {
+            setHeight(Number(window.innerHeight))
+        }
+        window.addEventListener('resize', scaleHeight)
+
+        return () => window.removeEventListener('resize', scaleHeight)
+    })
+
     
     return (
-    <Container>
-        <Header toggleDisplayInfo={() => setDisplayInfo(!displayInfo)}/>
+    <Container height={height}>
+        <Header windowHeight={height} toggleDisplayInfo={() => setDisplayInfo(!displayInfo)}/>
 
-        <MainRow backgroundColor={colors.jasje}>
-            <Content>
-                <Sides mobileOrder="2" justify="flex-end">
+        <MainRow windowHeight={height} backgroundColor={colors.jasje}>
+            <Content height={height}>
+                <Sides mobileOrder="1" justify="flex-end">
                     <MainButton onClick={randomize}><strong>randomize</strong></MainButton>
                 </Sides>
-                <CanvasContainer mobileOrder="1"> 
-                        <CanvasArea points={points} setPoints={setPoints} displayInfo={displayInfo} setDisplayInfo={setDisplayInfo} phase={phase}/> :
+                <CanvasContainer mobileOrder="3" windowHeight={height}> 
+                        <CanvasArea points={points} setPoints={setPoints} 
+                            displayInfo={displayInfo} setDisplayInfo={setDisplayInfo} phase={phase}
+                            canvasSize={height * .5}/> :
                 </CanvasContainer>
-                <Sides mobileOrder="3" justify="flex-start">
+                <Sides mobileOrder="2" justify="flex-start">
                     <MainButton onClick={reset}><strong>reset</strong></MainButton>
                 </Sides> 
                 <SliderContainer>
@@ -150,12 +171,11 @@ function Main(props) {
                 </SliderContainer>
             </Content>
         </MainRow>
-        <FooterRow>
-            <Footer color={colors.baksteen}><strong>{"programming & design: www.thomascode.nl"}</strong></Footer>
+        <FooterRow windowHeight={height}>
+            <Footer color={colors.baksteen}><A href="http://www.thomascode.nl"><strong>{"programming & design: www.thomascode.nl"}</strong></A></Footer>
         </FooterRow>
     </Container>
     )
-
 }
 
 export default Main;

@@ -2,7 +2,7 @@ import { intermediateRadiusRatio, endPointRatio, radius } from '../constants'
 
 export function findBezierPaths(points, phase, scale) {
     //takes a points-array and converts this into an array of Path2D object representing
-    //all lines and points of the bezier algorithm at a given phase. Lines are rendered as SVG-paths.
+    //all lines and points of the bezier algorithm at a given phase (t). Lines are rendered as SVG-paths.
     //returns an array of objects of the form {cirles, line}, each entry represents the elements of one iteration of the 
     //recursive bezier algorithm. 
 

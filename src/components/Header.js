@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors } from './constants'
+import { colors, mobileQuery } from './constants'
 
 const HeaderSides = styled.div`
     width:25%;
@@ -11,9 +11,12 @@ const HeaderSides = styled.div`
 const HeaderRow = styled.div`
     width: 100%;
     display: flex;
-    flex-grow: 1;
     align-items: center;
     max-width: 150vh;
+    height: ${props => props.windowHeight * .2}px;
+    @media ${mobileQuery} {
+        height: ${props => props.windowHeight * .15}px;
+    }
 `
 const Title = styled.h1`
     min-width: 50%;
@@ -22,6 +25,7 @@ const Title = styled.h1`
 `
 const InfoButton = styled.button`
     border-radius: 50%;
+    text-align: center;
     height: 5vh;
     width: 5vh;
     background-color: white;
@@ -33,9 +37,9 @@ const InfoButton = styled.button`
 `
 
 
-function Header ( {toggleDisplayInfo} ) {
+function Header ( {toggleDisplayInfo, windowHeight} ) {
     return (
-        <HeaderRow>
+        <HeaderRow windowHeight={windowHeight}>
             <HeaderSides></HeaderSides>
             <Title color={colors.baksteen}>Big Beziers</Title>
             <HeaderSides>
